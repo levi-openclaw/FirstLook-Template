@@ -4,6 +4,8 @@
 
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Flevi-openclaw%2FFirstLook-Template&env=NEXT_PUBLIC_SUPABASE_URL,NEXT_PUBLIC_SUPABASE_ANON_KEY,SUPABASE_SERVICE_ROLE_KEY,APIFY_API_TOKEN,ANTHROPIC_API_KEY&envDescription=API%20keys%20for%20Supabase%2C%20Apify%2C%20and%20Anthropic&envLink=https%3A%2F%2Fgithub.com%2Flevi-openclaw%2FFirstLook-Template%23environment-variables&project-name=firstlook&repository-name=firstlook)
 
+![Dashboard](docs/screenshots/dashboard.png)
+
 ---
 
 ## What It Does
@@ -19,6 +21,8 @@ FirstLook is a **content intelligence dashboard** that lets you:
 Apify Scrape → Raw Posts → Engagement Filter → Claude Vision Analysis → Content Explorer → Trends
 ```
 
+> **No API keys?** The app works with mock data out of the box. All pages render with sample content so you can explore the UI before connecting services.
+
 ## Tech Stack
 
 | Layer | Technology |
@@ -29,6 +33,48 @@ Apify Scrape → Raw Posts → Engagement Filter → Claude Vision Analysis → 
 | **Scraping** | Apify (configurable actors for any platform) |
 | **Styling** | Custom CSS design system (no Tailwind) |
 | **Icons** | lucide-react |
+
+---
+
+## Dashboard Pages
+
+### Get Started — `/admin`
+
+A guided 4-step onboarding that walks you through connecting services, setting up scrapers, running vision analysis, and exploring results. Below the guide, pipeline metrics show posts scraped, images analyzed, and analysis coverage.
+
+![Get Started](docs/screenshots/dashboard.png)
+
+### Data Ingestion — `/admin/ingestion`
+
+Upload a CSV of social media handles, browse the Apify marketplace for scrapers, configure actor input JSON, and trigger scrape runs. The numbered workflow guides you from import to analysis.
+
+![Data Ingestion](docs/screenshots/ingestion.png)
+
+### Content Explorer — `/admin/review`
+
+Browse all analyzed content in a filterable image grid. Sort by engagement, likes, comments, or date. Filter by style (editorial, documentary, minimalist, etc.), content type (product shot, lifestyle, behind the scenes, etc.), date range, and engagement percentage. Click any image for a detail panel with all tagged attributes. Export filtered results as CSV.
+
+![Content Explorer](docs/screenshots/content-explorer.png)
+
+### Prompt Editor — `/admin/prompts`
+
+Edit the Vision Tagging and Caption Generation prompts that Claude uses to analyze each image. The test panel shows a mock response so you can preview the JSON structure. Supports versioning — save drafts and deploy when ready.
+
+![Prompt Editor](docs/screenshots/prompt-editor.png)
+
+### Trends — `/admin/trends`
+
+Engagement benchmarks computed from your analyzed content. Compare candid vs. posed, text overlay impact, selfie vs. professional, and see which brands appear most in your dataset.
+
+![Trends](docs/screenshots/trends.png)
+
+### Settings — `/admin/settings`
+
+Check which API keys are connected, verify service status, and use the Prompt Helper template to generate a custom vision prompt for your specific industry.
+
+![Settings](docs/screenshots/settings.png)
+
+---
 
 ## Quick Start
 
@@ -68,23 +114,9 @@ ANTHROPIC_API_KEY=sk-ant-api03-...
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) — you'll land on the admin dashboard.
-
-> **No API keys?** The app works with mock data out of the box. All pages render with sample data so you can explore the UI before connecting services.
+Open [http://localhost:3000](http://localhost:3000) — you'll land on the Get Started guide.
 
 ---
-
-## Dashboard Pages
-
-| Page | Path | Description |
-|------|------|-------------|
-| **Dashboard** | `/admin` | Pipeline metrics, activity feed, cost tracking |
-| **Ingestion** | `/admin/ingestion` | Apify actor configs, scrape history, marketplace browser, CSV upload |
-| **Content Explorer** | `/admin/review` | Sortable/filterable image grid with detail panel and CSV export |
-| **Filters & Thresholds** | `/admin/scoring` | Engagement threshold configuration per follower tier |
-| **Prompts** | `/admin/prompts` | Vision prompt editor, test panel, version history |
-| **Trends** | `/admin/trends` | Style/content trends, platform comparison charts |
-| **Settings** | `/admin/settings` | API key status, connection testing, prompt helper |
 
 ## Key Features
 
@@ -110,7 +142,7 @@ Browse all analyzed content with sort controls (engagement, likes, comments, dat
 ```
 src/
 ├── app/
-│   ├── (admin)/admin/     # Dashboard pages (7 pages)
+│   ├── (admin)/admin/     # Dashboard pages (6 pages)
 │   ├── api/               # API routes
 │   │   ├── analyze/       # Vision analysis (single, batch, preview, captions)
 │   │   ├── apify/         # Actor trigger, store proxy, webhook handler
@@ -120,10 +152,9 @@ src/
 │   └── layout.tsx         # Root layout with theme support
 ├── components/
 │   ├── admin/             # Page-specific components
-│   │   ├── dashboard/     # Metrics, activity feed, cost tracker
-│   │   ├── ingestion/     # Actor configs, marketplace, CSV uploader
+│   │   ├── onboarding/    # Get Started guide
+│   │   ├── ingestion/     # Actor configs, marketplace, CSV uploader, workflow
 │   │   ├── review/        # Image grid, detail panel, filters
-│   │   ├── scoring/       # Threshold manager
 │   │   ├── prompts/       # Prompt editor, test panel
 │   │   ├── trends/        # Charts, style grid
 │   │   └── settings/      # API status, prompt helper
