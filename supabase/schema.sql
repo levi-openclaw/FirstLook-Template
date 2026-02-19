@@ -1,26 +1,44 @@
 -- FirstLook Template Database Schema
--- Run this in your Supabase SQL Editor to set up the database
+-- Idempotent: safe to run multiple times (uses IF NOT EXISTS / EXCEPTION handlers)
+-- Run this in your Supabase SQL Editor or via the dashboard "Initialize Database" button
 
 -- ============================================================
--- ENUM TYPES
+-- ENUM TYPES (wrapped in DO blocks for idempotency)
 -- ============================================================
 
-CREATE TYPE platform AS ENUM ('instagram', 'tiktok');
-CREATE TYPE pipeline_source AS ENUM ('curated', 'hashtag');
-CREATE TYPE media_type AS ENUM ('image', 'carousel', 'video', 'reel');
-CREATE TYPE follower_tier AS ENUM ('micro', 'mid', 'established', 'major');
-CREATE TYPE review_status AS ENUM ('unreviewed', 'approved', 'rejected');
-CREATE TYPE emotion_level AS ENUM ('low', 'medium', 'high');
-CREATE TYPE prompt_type AS ENUM ('vision_tagging', 'caption_generation');
-CREATE TYPE scrape_run_status AS ENUM ('running', 'succeeded', 'failed', 'aborted');
-CREATE TYPE activity_event_type AS ENUM ('scrape_complete', 'analysis_complete', 'review_action', 'threshold_update', 'error');
+DO $$ BEGIN CREATE TYPE platform AS ENUM ('instagram', 'tiktok');
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+
+DO $$ BEGIN CREATE TYPE pipeline_source AS ENUM ('curated', 'hashtag');
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+
+DO $$ BEGIN CREATE TYPE media_type AS ENUM ('image', 'carousel', 'video', 'reel');
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+
+DO $$ BEGIN CREATE TYPE follower_tier AS ENUM ('micro', 'mid', 'established', 'major');
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+
+DO $$ BEGIN CREATE TYPE review_status AS ENUM ('unreviewed', 'approved', 'rejected');
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+
+DO $$ BEGIN CREATE TYPE emotion_level AS ENUM ('low', 'medium', 'high');
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+
+DO $$ BEGIN CREATE TYPE prompt_type AS ENUM ('vision_tagging', 'caption_generation');
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+
+DO $$ BEGIN CREATE TYPE scrape_run_status AS ENUM ('running', 'succeeded', 'failed', 'aborted');
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+
+DO $$ BEGIN CREATE TYPE activity_event_type AS ENUM ('scrape_complete', 'analysis_complete', 'review_action', 'threshold_update', 'error');
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
 -- ============================================================
 -- TABLES
 -- ============================================================
 
 -- Actor configurations for Apify scraping
-CREATE TABLE actor_configs (
+CREATE TABLE IF NOT EXISTS actor_configs (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   actor_name TEXT NOT NULL,
   platform platform NOT NULL,
@@ -34,7 +52,7 @@ CREATE TABLE actor_configs (
 );
 
 -- Scrape run history
-CREATE TABLE scrape_runs (
+CREATE TABLE IF NOT EXISTS scrape_runs (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   actor_id UUID NOT NULL REFERENCES actor_configs(id) ON DELETE CASCADE,
   actor_name TEXT NOT NULL,
@@ -50,7 +68,7 @@ CREATE TABLE scrape_runs (
 );
 
 -- Raw scraped posts
-CREATE TABLE raw_posts (
+CREATE TABLE IF NOT EXISTS raw_posts (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   platform platform NOT NULL,
   platform_post_id TEXT NOT NULL,
@@ -74,13 +92,13 @@ CREATE TABLE raw_posts (
   style_cluster TEXT
 );
 
-CREATE UNIQUE INDEX raw_posts_platform_post_id_idx ON raw_posts(platform_post_id);
-CREATE INDEX raw_posts_scraped_at_idx ON raw_posts(scraped_at DESC);
-CREATE INDEX raw_posts_platform_idx ON raw_posts(platform);
-CREATE INDEX raw_posts_engagement_rate_idx ON raw_posts(engagement_rate DESC);
+CREATE UNIQUE INDEX IF NOT EXISTS raw_posts_platform_post_id_idx ON raw_posts(platform_post_id);
+CREATE INDEX IF NOT EXISTS raw_posts_scraped_at_idx ON raw_posts(scraped_at DESC);
+CREATE INDEX IF NOT EXISTS raw_posts_platform_idx ON raw_posts(platform);
+CREATE INDEX IF NOT EXISTS raw_posts_engagement_rate_idx ON raw_posts(engagement_rate DESC);
 
 -- Analyzed images (vision-tagged from raw posts)
-CREATE TABLE analyzed_images (
+CREATE TABLE IF NOT EXISTS analyzed_images (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   raw_post_id UUID NOT NULL REFERENCES raw_posts(id) ON DELETE CASCADE,
   image_url TEXT NOT NULL,
@@ -126,14 +144,14 @@ CREATE TABLE analyzed_images (
   brand_names TEXT[] NOT NULL DEFAULT '{none}'
 );
 
-CREATE INDEX analyzed_images_review_status_idx ON analyzed_images(review_status);
-CREATE INDEX analyzed_images_content_type_idx ON analyzed_images(content_type);
-CREATE INDEX analyzed_images_moment_category_idx ON analyzed_images(moment_category);
-CREATE INDEX analyzed_images_style_idx ON analyzed_images(style);
-CREATE INDEX analyzed_images_analyzed_at_idx ON analyzed_images(analyzed_at DESC);
+CREATE INDEX IF NOT EXISTS analyzed_images_review_status_idx ON analyzed_images(review_status);
+CREATE INDEX IF NOT EXISTS analyzed_images_content_type_idx ON analyzed_images(content_type);
+CREATE INDEX IF NOT EXISTS analyzed_images_moment_category_idx ON analyzed_images(moment_category);
+CREATE INDEX IF NOT EXISTS analyzed_images_style_idx ON analyzed_images(style);
+CREATE INDEX IF NOT EXISTS analyzed_images_analyzed_at_idx ON analyzed_images(analyzed_at DESC);
 
 -- Engagement thresholds (composite PK)
-CREATE TABLE engagement_thresholds (
+CREATE TABLE IF NOT EXISTS engagement_thresholds (
   follower_tier follower_tier NOT NULL,
   platform platform NOT NULL,
   p85_engagement_rate NUMERIC(10, 6) NOT NULL,
@@ -143,7 +161,7 @@ CREATE TABLE engagement_thresholds (
 );
 
 -- Prompt versions
-CREATE TABLE prompt_versions (
+CREATE TABLE IF NOT EXISTS prompt_versions (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   prompt_type prompt_type NOT NULL,
   version INT NOT NULL,
@@ -154,11 +172,11 @@ CREATE TABLE prompt_versions (
   notes TEXT NOT NULL DEFAULT ''
 );
 
-CREATE INDEX prompt_versions_type_active_idx ON prompt_versions(prompt_type, is_active);
-CREATE INDEX prompt_versions_type_version_idx ON prompt_versions(prompt_type, version DESC);
+CREATE INDEX IF NOT EXISTS prompt_versions_type_active_idx ON prompt_versions(prompt_type, is_active);
+CREATE INDEX IF NOT EXISTS prompt_versions_type_version_idx ON prompt_versions(prompt_type, version DESC);
 
 -- Activity events (pipeline log)
-CREATE TABLE activity_events (
+CREATE TABLE IF NOT EXISTS activity_events (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   type activity_event_type NOT NULL,
   message TEXT NOT NULL,
@@ -166,11 +184,11 @@ CREATE TABLE activity_events (
   metadata JSONB
 );
 
-CREATE INDEX activity_events_timestamp_idx ON activity_events(timestamp DESC);
-CREATE INDEX activity_events_type_idx ON activity_events(type);
+CREATE INDEX IF NOT EXISTS activity_events_timestamp_idx ON activity_events(timestamp DESC);
+CREATE INDEX IF NOT EXISTS activity_events_type_idx ON activity_events(type);
 
 -- Trend snapshots
-CREATE TABLE trend_snapshots (
+CREATE TABLE IF NOT EXISTS trend_snapshots (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   date DATE NOT NULL,
   top_styles JSONB NOT NULL DEFAULT '[]',
@@ -179,10 +197,10 @@ CREATE TABLE trend_snapshots (
   UNIQUE(date)
 );
 
-CREATE INDEX trend_snapshots_date_idx ON trend_snapshots(date DESC);
+CREATE INDEX IF NOT EXISTS trend_snapshots_date_idx ON trend_snapshots(date DESC);
 
 -- API key statuses (service connection tracking)
-CREATE TABLE api_key_statuses (
+CREATE TABLE IF NOT EXISTS api_key_statuses (
   service TEXT PRIMARY KEY,
   is_connected BOOLEAN NOT NULL DEFAULT false,
   last_verified TIMESTAMPTZ,
@@ -191,7 +209,7 @@ CREATE TABLE api_key_statuses (
 );
 
 -- Curated accounts (managed scrape targets)
-CREATE TABLE curated_accounts (
+CREATE TABLE IF NOT EXISTS curated_accounts (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   handle TEXT NOT NULL UNIQUE,
   platform platform NOT NULL,
@@ -202,7 +220,7 @@ CREATE TABLE curated_accounts (
   is_active BOOLEAN NOT NULL DEFAULT true
 );
 
-CREATE INDEX curated_accounts_platform_idx ON curated_accounts(platform);
-CREATE INDEX curated_accounts_active_idx ON curated_accounts(is_active);
+CREATE INDEX IF NOT EXISTS curated_accounts_platform_idx ON curated_accounts(platform);
+CREATE INDEX IF NOT EXISTS curated_accounts_active_idx ON curated_accounts(is_active);
 
 -- Admin tables don't need RLS (accessed via service role key only)

@@ -2,7 +2,7 @@
 
 **Open-source social media content intelligence platform.** Scrape, analyze, and explore content performance across any niche using Apify, Claude Vision, and Supabase.
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Flevi-openclaw%2FFirstLook-Template&env=NEXT_PUBLIC_SUPABASE_URL,NEXT_PUBLIC_SUPABASE_ANON_KEY,SUPABASE_SERVICE_ROLE_KEY,APIFY_API_TOKEN,ANTHROPIC_API_KEY&envDescription=API%20keys%20for%20Supabase%2C%20Apify%2C%20and%20Anthropic&envLink=https%3A%2F%2Fgithub.com%2Flevi-openclaw%2FFirstLook-Template%23environment-variables&project-name=firstlook&repository-name=firstlook)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Flevi-openclaw%2FFirstLook-Template&env=NEXT_PUBLIC_SUPABASE_URL,NEXT_PUBLIC_SUPABASE_ANON_KEY,SUPABASE_SERVICE_ROLE_KEY,DATABASE_URL,APIFY_API_TOKEN,ANTHROPIC_API_KEY&envDescription=API%20keys%20for%20Supabase%2C%20Apify%2C%20and%20Anthropic.%20DATABASE_URL%20enables%20one-click%20database%20setup.&envLink=https%3A%2F%2Fgithub.com%2Flevi-openclaw%2FFirstLook-Template%23environment-variables&project-name=firstlook&repository-name=firstlook)
 
 ![Dashboard](docs/screenshots/dashboard.png)
 
@@ -89,8 +89,10 @@ npm install
 ### 2. Set Up Supabase
 
 1. Create a new project at [supabase.com](https://supabase.com)
-2. Open the SQL Editor and run the contents of `supabase/schema.sql`
-3. Copy your project URL, anon key, and service role key
+2. Copy your project URL, anon key, and service role key (Settings → API)
+3. **Recommended:** Also copy the database connection string (Settings → Database → Connection string URI) for one-click setup
+
+> **Auto-setup:** If `DATABASE_URL` is provided, the dashboard will show a one-click "Initialize Database" button on first visit that creates all tables automatically. Otherwise, run `supabase/schema.sql` manually in the SQL Editor.
 
 ### 3. Configure Environment
 
@@ -104,6 +106,7 @@ Fill in your API keys:
 NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJ...
 SUPABASE_SERVICE_ROLE_KEY=eyJ...
+DATABASE_URL=postgresql://postgres.[ref]:[password]@aws-0-[region].pooler.supabase.com:6543/postgres
 APIFY_API_TOKEN=apify_api_...
 ANTHROPIC_API_KEY=sk-ant-api03-...
 ```
@@ -195,6 +198,7 @@ src/
 | `NEXT_PUBLIC_SUPABASE_URL` | Yes | Supabase project URL |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Yes | Supabase anonymous key |
 | `SUPABASE_SERVICE_ROLE_KEY` | Yes | Supabase service role key (server-side only) |
+| `DATABASE_URL` | Recommended | Direct Postgres connection string (enables one-click database setup) |
 | `APIFY_API_TOKEN` | Yes | Apify API token for running scrapers |
 | `ANTHROPIC_API_KEY` | Yes | Anthropic API key for Claude Vision |
 | `APIFY_WEBHOOK_SECRET` | No | Secret for verifying Apify webhook signatures |
