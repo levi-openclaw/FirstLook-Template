@@ -1,13 +1,18 @@
 'use client';
 
-import { useState, useCallback, useRef } from 'react';
-import { Upload, FileSpreadsheet, Check, Copy, X } from 'lucide-react';
+import { useState, useCallback, useRef, useEffect } from 'react';
+import { Upload, FileSpreadsheet, Check, Copy, X, Info } from 'lucide-react';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 
 interface ParsedCsv {
   headers: string[];
   rows: string[][];
+}
+
+interface CsvUploaderProps {
+  onHandlesImported?: (handles: string[]) => void;
+  onHandlesCleared?: () => void;
 }
 
 function parseCsv(text: string): ParsedCsv {
@@ -45,7 +50,7 @@ function parseCsv(text: string): ParsedCsv {
   return { headers, rows };
 }
 
-export function CsvUploader() {
+export function CsvUploader({ onHandlesImported, onHandlesCleared }: CsvUploaderProps) {
   const [dragOver, setDragOver] = useState(false);
   const [parsed, setParsed] = useState<ParsedCsv | null>(null);
   const [selectedColumn, setSelectedColumn] = useState<number | null>(null);
@@ -67,9 +72,44 @@ export function CsvUploader() {
       const text = e.target?.result as string;
       const result = parseCsv(text);
       setParsed(result);
+
+      // Auto-select "handle" column if it exists
+      const handleIdx = result.headers.findIndex(
+        (h) => h.toLowerCase() === 'handle' || h.toLowerCase() === 'username'
+      );
+      if (handleIdx >= 0) {
+        selectColumn(handleIdx, result);
+      }
     };
     reader.readAsText(file);
   }, []);
+
+  const selectColumn = useCallback((index: number, csv: ParsedCsv) => {
+    setSelectedColumn(index);
+
+    const values = csv.rows
+      .map((row) => row[index])
+      .filter((v) => v && v.trim() !== '');
+
+    const looksLikeUrls = values.some((v) => v.startsWith('http'));
+    const key = looksLikeUrls ? 'urls' : 'usernames';
+
+    const json = JSON.stringify({ [key]: values }, null, 2);
+    setOutputJson(json);
+    setCopied(false);
+
+    onHandlesImported?.(values);
+  }, [onHandlesImported]);
+
+  // Notify parent when handles are extracted
+  useEffect(() => {
+    if (selectedColumn !== null && parsed) {
+      const values = parsed.rows
+        .map((row) => row[selectedColumn])
+        .filter((v) => v && v.trim() !== '');
+      onHandlesImported?.(values);
+    }
+  }, [selectedColumn, parsed, onHandlesImported]);
 
   const handleDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -96,20 +136,8 @@ export function CsvUploader() {
 
   const handleColumnSelect = useCallback((index: number) => {
     if (!parsed) return;
-    setSelectedColumn(index);
-
-    const values = parsed.rows
-      .map((row) => row[index])
-      .filter((v) => v && v.trim() !== '');
-
-    // Detect if values look like URLs or handles
-    const looksLikeUrls = values.some((v) => v.startsWith('http'));
-    const key = looksLikeUrls ? 'urls' : 'usernames';
-
-    const json = JSON.stringify({ [key]: values }, null, 2);
-    setOutputJson(json);
-    setCopied(false);
-  }, [parsed]);
+    selectColumn(index, parsed);
+  }, [parsed, selectColumn]);
 
   const handleCopy = useCallback(async () => {
     try {
@@ -117,7 +145,6 @@ export function CsvUploader() {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch {
-      // Fallback for older browsers
       const textarea = document.createElement('textarea');
       textarea.value = outputJson;
       document.body.appendChild(textarea);
@@ -138,15 +165,16 @@ export function CsvUploader() {
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
-  }, []);
+    onHandlesCleared?.();
+  }, [onHandlesCleared]);
 
   return (
     <Card>
       <div style={{ padding: 'var(--space-4)' }}>
-        <div className="flex items-center justify-between" style={{ marginBottom: 'var(--space-4)' }}>
+        <div className="flex items-center justify-between" style={{ marginBottom: 'var(--space-2)' }}>
           <div className="flex items-center gap-2">
             <FileSpreadsheet size={16} style={{ color: 'var(--text-tertiary)' }} />
-            <span className="t-sub">CSV Upload</span>
+            <span className="t-sub">Import Account Handles</span>
           </div>
           {parsed && (
             <Button variant="ghost" size="sm" onClick={handleReset}>
@@ -156,8 +184,41 @@ export function CsvUploader() {
           )}
         </div>
 
+        <p className="t-body" style={{ color: 'var(--text-secondary)', marginBottom: 'var(--space-3)' }}>
+          Upload a CSV with the social media handles you want to scrape.
+          The CSV should have a column with account usernames (without the @ symbol).
+        </p>
+
+        {!parsed && (
+          <div
+            className="flex items-start gap-2"
+            style={{
+              padding: 'var(--space-3)',
+              borderRadius: 'var(--radius)',
+              background: 'var(--bg)',
+              border: '1px solid var(--border)',
+              marginBottom: 'var(--space-3)',
+            }}
+          >
+            <Info size={14} style={{ color: 'var(--text-tertiary)', flexShrink: 0, marginTop: 2 }} />
+            <div>
+              <span className="t-caption" style={{ fontWeight: 500 }}>Example CSV format:</span>
+              <pre
+                style={{
+                  fontFamily: 'monospace',
+                  fontSize: 11,
+                  lineHeight: 1.6,
+                  margin: '4px 0 0',
+                  color: 'var(--text-secondary)',
+                }}
+              >
+                {`handle\nnatgeo\nfoodnetwork\nnike\nairbnb`}
+              </pre>
+            </div>
+          </div>
+        )}
+
         {!parsed ? (
-          /* Drop zone */
           <div
             onDrop={handleDrop}
             onDragOver={handleDragOver}
@@ -176,9 +237,6 @@ export function CsvUploader() {
             <Upload size={28} style={{ color: 'var(--text-tertiary)', marginBottom: 'var(--space-2)' }} />
             <p className="t-body" style={{ color: 'var(--text-secondary)', marginBottom: 'var(--space-1)' }}>
               Drop a CSV file here or click to browse
-            </p>
-            <p className="t-caption" style={{ color: 'var(--text-tertiary)' }}>
-              Upload a list of handles or URLs to use as actor input
             </p>
             <input
               ref={fileInputRef}
@@ -265,32 +323,6 @@ export function CsvUploader() {
                 </table>
               </div>
             </div>
-
-            {/* Selected values list */}
-            {selectedColumn !== null && (
-              <div>
-                <span className="t-label" style={{ display: 'block', marginBottom: 'var(--space-2)' }}>
-                  Extracted Values ({parsed.rows.filter((r) => r[selectedColumn] && r[selectedColumn].trim()).length})
-                </span>
-                <div style={{
-                  maxHeight: 120,
-                  overflowY: 'auto',
-                  padding: 'var(--space-2) var(--space-3)',
-                  borderRadius: 'var(--radius)',
-                  border: '1px solid var(--border)',
-                  background: 'var(--bg)',
-                  fontSize: 12,
-                  lineHeight: 1.8,
-                }}>
-                  {parsed.rows
-                    .map((row) => row[selectedColumn])
-                    .filter((v) => v && v.trim())
-                    .map((v, i) => (
-                      <span key={i} className="t-caption" style={{ display: 'block' }}>{v}</span>
-                    ))}
-                </div>
-              </div>
-            )}
 
             {/* Output JSON */}
             {outputJson && (

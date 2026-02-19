@@ -8,25 +8,25 @@ import { ProgressBar } from '@/components/ui/ProgressBar';
 import { formatCurrency, formatRelativeTime } from '@/lib/utils/format';
 import { Key, ExternalLink, ChevronDown, ChevronUp, AlertCircle, CheckCircle } from 'lucide-react';
 
-const SERVICE_CONFIG: Record<string, { envVar: string; helpText: string; helpUrl: string }> = {
+const SERVICE_CONFIG: Record<string, { envVars: string[]; helpText: string; helpUrl: string }> = {
   'Supabase': {
-    envVar: 'NEXT_PUBLIC_SUPABASE_URL',
-    helpText: 'Get your project URL and keys from supabase.com \u2192 Settings \u2192 API',
+    envVars: ['NEXT_PUBLIC_SUPABASE_URL', 'NEXT_PUBLIC_SUPABASE_ANON_KEY', 'SUPABASE_SERVICE_ROLE_KEY'],
+    helpText: 'You need 3 keys from supabase.com \u2192 Settings \u2192 API: the Project URL, the anon (public) key, and the service_role (secret) key',
     helpUrl: 'https://supabase.com',
   },
   'Apify': {
-    envVar: 'APIFY_API_TOKEN',
+    envVars: ['APIFY_API_TOKEN'],
     helpText: 'Get your API token from console.apify.com \u2192 Settings \u2192 Integrations',
     helpUrl: 'https://console.apify.com',
   },
   'Anthropic (Claude)': {
-    envVar: 'ANTHROPIC_API_KEY',
+    envVars: ['ANTHROPIC_API_KEY'],
     helpText: 'Get your API key from console.anthropic.com \u2192 API Keys',
     helpUrl: 'https://console.anthropic.com',
   },
   'OpenAI': {
-    envVar: 'OPENAI_API_KEY',
-    helpText: 'Get your API key from platform.openai.com \u2192 API Keys',
+    envVars: ['OPENAI_API_KEY'],
+    helpText: 'Get your API key from platform.openai.com \u2192 API Keys (optional \u2014 only needed for embeddings)',
     helpUrl: 'https://platform.openai.com',
   },
 };
@@ -146,20 +146,25 @@ export function ApiKeyStatusPanel({ statuses }: ApiKeyStatusPanelProps) {
                     {/* Env var display */}
                     <div style={{ marginBottom: 'var(--space-3)' }}>
                       <label className="t-label" style={{ display: 'block', marginBottom: 'var(--space-1)' }}>
-                        Environment Variable
+                        {config.envVars.length > 1 ? 'Environment Variables' : 'Environment Variable'}
                       </label>
-                      <input
-                        className="input"
-                        type="text"
-                        value={config.envVar}
-                        readOnly
-                        style={{
-                          width: '100%',
-                          fontFamily: 'var(--font-mono, monospace)',
-                          fontSize: 'var(--text-sm)',
-                          cursor: 'default',
-                        }}
-                      />
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-1)' }}>
+                        {config.envVars.map((envVar) => (
+                          <input
+                            key={envVar}
+                            className="input"
+                            type="text"
+                            value={envVar}
+                            readOnly
+                            style={{
+                              width: '100%',
+                              fontFamily: 'var(--font-mono, monospace)',
+                              fontSize: 'var(--text-sm)',
+                              cursor: 'default',
+                            }}
+                          />
+                        ))}
+                      </div>
                     </div>
 
                     {/* Help text */}
@@ -208,7 +213,7 @@ export function ApiKeyStatusPanel({ statuses }: ApiKeyStatusPanelProps) {
                       >
                         <AlertCircle size={14} style={{ color: 'var(--warning, #f59e0b)', flexShrink: 0 }} />
                         <span className="t-caption" style={{ color: 'var(--warning, #f59e0b)' }}>
-                          To remove this key, delete the corresponding variable from your .env.local file and restart the server.
+                          To update or remove keys, go to your Vercel project → Settings → Environment Variables. For local development, edit your .env.local file and restart the server.
                         </span>
                       </div>
                     )}

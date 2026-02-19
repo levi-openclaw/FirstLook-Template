@@ -98,7 +98,7 @@ export default function ReviewPageClient({ initialImages }: ReviewPageClientProp
   const filtered = useMemo(() => {
     let result = images.filter((img) => {
       if (styleFilter !== 'all' && img.style !== styleFilter) return false;
-      if (momentFilter !== 'all' && img.moment_category !== momentFilter) return false;
+      if (momentFilter !== 'all' && img.content_type !== momentFilter) return false;
 
       // Date range filter
       if (dateRange !== 'all' && img.post_date) {

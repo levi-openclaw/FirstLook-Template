@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { Info } from 'lucide-react';
 import { Chip } from '@/components/ui/Chip';
 import { PromptEditor } from '@/components/admin/prompts/PromptEditor';
 import { PromptTestPanel } from '@/components/admin/prompts/PromptTestPanel';
@@ -36,6 +37,25 @@ export default function PromptsPageClient({ initialVersions }: PromptsPageClient
       <div className="page-header">
         <h1>Prompt Editor</h1>
         <p className="t-sub">Manage and test vision tagging and caption generation prompts</p>
+      </div>
+
+      <div
+        className="flex items-center gap-2"
+        style={{
+          padding: 'var(--space-3)',
+          borderRadius: 'var(--radius)',
+          background: 'color-mix(in srgb, var(--accent) 8%, transparent)',
+          border: '1px solid color-mix(in srgb, var(--accent) 20%, transparent)',
+          marginBottom: 'var(--space-4)',
+        }}
+      >
+        <Info size={16} style={{ color: 'var(--accent)', flexShrink: 0 }} />
+        <span className="t-body" style={{ color: 'var(--text-secondary)' }}>
+          <strong>How this works:</strong> Your Vision prompt tells Claude what to look for in each image.
+          The JSON fields it returns (like <code>content_type</code>, <code>lighting</code>, <code>style</code>) become
+          the filters in Content Explorer and the dimensions in Trends. Editing this prompt changes what gets
+          tagged — existing images won&apos;t be re-analyzed unless you re-run analysis from the Ingestion page.
+        </span>
       </div>
 
       <div className="flex items-center gap-2" style={{ marginBottom: 'var(--space-4)' }}>

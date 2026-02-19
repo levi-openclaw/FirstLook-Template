@@ -3,10 +3,9 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
-  LayoutDashboard,
+  Rocket,
   Download,
   Images,
-  Gauge,
   MessageSquareCode,
   TrendingUp,
   Settings,
@@ -21,10 +20,9 @@ import { cn } from '@/lib/utils/cn';
 import styles from './AdminSidebar.module.css';
 
 const iconMap = {
-  LayoutDashboard,
+  Rocket,
   Download,
   Images,
-  Gauge,
   MessageSquareCode,
   TrendingUp,
   Settings,

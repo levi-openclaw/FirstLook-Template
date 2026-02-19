@@ -1,8 +1,7 @@
 export const adminNavItems = [
-  { label: 'Dashboard', href: '/admin', icon: 'LayoutDashboard' as const },
+  { label: 'Get Started', href: '/admin', icon: 'Rocket' as const },
   { label: 'Data Ingestion', href: '/admin/ingestion', icon: 'Download' as const },
   { label: 'Content Explorer', href: '/admin/review', icon: 'Images' as const },
-  { label: 'Filters & Thresholds', href: '/admin/scoring', icon: 'Gauge' as const },
   { label: 'Prompt Editor', href: '/admin/prompts', icon: 'MessageSquareCode' as const },
   { label: 'Trends', href: '/admin/trends', icon: 'TrendingUp' as const },
   { label: 'Settings', href: '/admin/settings', icon: 'Settings' as const },

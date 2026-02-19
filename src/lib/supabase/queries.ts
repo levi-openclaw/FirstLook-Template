@@ -7,7 +7,6 @@ import {
   mockScrapeRuns,
   mockRawPosts,
   mockAnalyzedImages,
-  mockEngagementThresholds,
   mockPromptVersions,
   mockTrendSnapshots,
   mockApiKeyStatuses,
@@ -19,7 +18,6 @@ import type {
   ScrapeRun,
   RawPost,
   AnalyzedImage,
-  EngagementThreshold,
   PromptVersion,
   PromptType,
   TrendSnapshot,
@@ -250,27 +248,6 @@ export async function getAnalyzedImages(): Promise<AnalyzedImage[]> {
   });
 
   return images as AnalyzedImage[];
-}
-
-// ============================================================
-// Engagement Thresholds
-// ============================================================
-
-export async function getEngagementThresholds(): Promise<EngagementThreshold[]> {
-  if (!isSupabaseConfigured()) return mockEngagementThresholds;
-
-  const supabase = createServerClient();
-  const { data, error } = await supabase
-    .from('engagement_thresholds')
-    .select('*')
-    .order('follower_tier');
-
-  if (error) {
-    console.error('getEngagementThresholds error:', error);
-    return mockEngagementThresholds;
-  }
-
-  return data as EngagementThreshold[];
 }
 
 // ============================================================

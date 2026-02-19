@@ -5,6 +5,7 @@ import { MetricCard } from '@/components/ui/MetricCard';
 import { PipelineHealthCard } from '@/components/admin/dashboard/PipelineHealthCard';
 import { QueueStatusCard } from '@/components/admin/dashboard/QueueStatusCard';
 import { ActivityFeed } from '@/components/admin/dashboard/ActivityFeed';
+import { GetStartedGuide } from '@/components/admin/onboarding/GetStartedGuide';
 import { getPipelineStats, getActivityEvents } from '@/lib/supabase/queries';
 import { formatNumber } from '@/lib/utils/format';
 
@@ -22,8 +23,16 @@ export default async function DashboardPage() {
   return (
     <div>
       <div className="page-header">
-        <h1>Dashboard</h1>
-        <p className="t-sub">Pipeline overview and system metrics</p>
+        <h1>Get Started</h1>
+        <p className="t-sub">Set up your content intelligence pipeline in 4 steps</p>
+      </div>
+
+      <div style={{ marginBottom: 'var(--space-6)' }}>
+        <GetStartedGuide />
+      </div>
+
+      <div style={{ marginBottom: 'var(--space-4)' }}>
+        <h2 className="t-sub" style={{ fontWeight: 600 }}>Pipeline Overview</h2>
       </div>
 
       <div className="grid-2" style={{ marginBottom: 'var(--space-6)' }}>

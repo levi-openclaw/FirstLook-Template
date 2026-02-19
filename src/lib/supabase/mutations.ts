@@ -46,28 +46,6 @@ export async function batchUpdateReviewStatus(
 }
 
 // ============================================================
-// Engagement Thresholds
-// ============================================================
-
-export async function updateEngagementThreshold(
-  followerTier: string,
-  platform: string,
-  rate: number
-) {
-  const supabase = createServerClient();
-  const { error } = await supabase
-    .from('engagement_thresholds')
-    .update({
-      p85_engagement_rate: rate,
-      calculated_at: new Date().toISOString(),
-    })
-    .eq('follower_tier', followerTier)
-    .eq('platform', platform);
-
-  if (error) throw new Error(`updateEngagementThreshold: ${error.message}`);
-}
-
-// ============================================================
 // Prompt Versions
 // ============================================================
 
