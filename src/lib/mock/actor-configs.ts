@@ -1,0 +1,65 @@
+import type { ActorConfig } from '@/lib/types/database';
+
+export const mockActorConfigs: ActorConfig[] = [
+  {
+    id: 'act_ig_curated_001',
+    actor_name: 'Instagram Curated Scraper',
+    platform: 'instagram',
+    pipeline_source: 'curated',
+    target_accounts: [
+      '@glossierinc', '@chasejarvis', '@minimalistbaker', '@chrisburkard',
+      '@surfrider', '@travelandleisure', '@apple', '@zara',
+      '@thefeedfeed', '@gordonramsay', '@bangolufsen', '@eabordeaux',
+    ],
+    hashtags: [],
+    max_posts_per_run: 100,
+    schedule_cron: '0 2 * * *',
+    is_active: true,
+    last_run_at: '2026-02-17T02:00:00Z',
+  },
+  {
+    id: 'act_ig_hashtag_001',
+    actor_name: 'Instagram Hashtag Scraper',
+    platform: 'instagram',
+    pipeline_source: 'hashtag',
+    target_accounts: [],
+    hashtags: [
+      'contentcreator', 'socialmediamarketing', 'brandphotography', 'productphotography',
+      'foodphotography', 'fashionphotography', 'travelphotography', 'lifestyleblogger',
+    ],
+    max_posts_per_run: 200,
+    schedule_cron: '0 2 * * *',
+    is_active: true,
+    last_run_at: '2026-02-17T02:00:00Z',
+  },
+  {
+    id: 'act_tt_curated_001',
+    actor_name: 'TikTok Curated Scraper',
+    platform: 'tiktok',
+    pipeline_source: 'curated',
+    target_accounts: [
+      '@jeffnippard', '@peterpark_photo', '@emmachamberlain',
+      '@mrandmrssmith', '@travelandleisure', '@nikesb',
+    ],
+    hashtags: [],
+    max_posts_per_run: 50,
+    schedule_cron: '0 2 * * *',
+    is_active: true,
+    last_run_at: '2026-02-16T02:00:00Z',
+  },
+  {
+    id: 'act_tt_hashtag_001',
+    actor_name: 'TikTok Hashtag Scraper',
+    platform: 'tiktok',
+    pipeline_source: 'hashtag',
+    target_accounts: [],
+    hashtags: [
+      'contentcreator', 'aesthetic', 'viralcontent', 'socialmediatips',
+      'brandcontent', 'ugc', 'influencer',
+    ],
+    max_posts_per_run: 150,
+    schedule_cron: '0 2 * * *',
+    is_active: true,
+    last_run_at: '2026-02-17T02:00:00Z',
+  },
+];

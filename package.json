@@ -1,0 +1,27 @@
+{
+  "name": "firstlook-template",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.76.0",
+    "@supabase/supabase-js": "^2.96.0",
+    "apify-client": "^2.22.1",
+    "lucide-react": "^0.574.0",
+    "next": "16.1.6",
+    "openai": "^6.22.0",
+    "pg": "^8.18.0",
+    "react": "19.2.3",
+    "react-dom": "19.2.3"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "typescript": "^5"
+  }
+}
