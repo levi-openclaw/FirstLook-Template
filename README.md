@@ -108,6 +108,24 @@ APIFY_API_TOKEN=apify_api_...
 ANTHROPIC_API_KEY=sk-ant-api03-...
 ```
 
+### Where to Find Your API Keys
+
+**Supabase** — You need 3 values from your Supabase project:
+
+The **API URL** is under **Integrations → Data API**:
+
+![Supabase API URL](docs/screenshots/supabase-api-url.jpg)
+
+The **anon key** (publishable) and **service role key** (secret) are under **Settings → API Keys**:
+
+![Supabase API Keys](docs/screenshots/supabase-api-keys.jpg)
+
+**Apify** — Go to **Settings → API & Integrations → Personal API tokens** and create a token:
+
+![Apify API Token](docs/screenshots/apify-api-token.jpg)
+
+**Anthropic** — Get your API key from [console.anthropic.com](https://console.anthropic.com) → **API Keys**.
+
 ### 4. Run
 
 ```bash
