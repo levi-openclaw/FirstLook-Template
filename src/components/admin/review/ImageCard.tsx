@@ -1,4 +1,4 @@
-import { Check, Heart, MessageCircle, Users } from 'lucide-react';
+import { Heart, MessageCircle, Users } from 'lucide-react';
 import type { AnalyzedImage } from '@/lib/types/database';
 import { Badge } from '@/components/ui/Badge';
 import { formatPercentage, formatNumber, formatRelativeTime } from '@/lib/utils/format';
@@ -12,13 +12,10 @@ const statusVariant: Record<string, 'success' | 'warning' | 'neutral'> = {
 interface ImageCardProps {
   image: AnalyzedImage;
   isSelected: boolean;
-  isChecked: boolean;
-  showCheckbox: boolean;
   onClick: () => void;
-  onToggleCheck: (e: React.MouseEvent) => void;
 }
 
-export function ImageCard({ image, isSelected, isChecked, showCheckbox, onClick, onToggleCheck }: ImageCardProps) {
+export function ImageCard({ image, isSelected, onClick }: ImageCardProps) {
   return (
     <div
       className="image-card"
@@ -29,12 +26,9 @@ export function ImageCard({ image, isSelected, isChecked, showCheckbox, onClick,
         overflow: 'hidden',
         border: isSelected
           ? '2px solid var(--accent)'
-          : isChecked
-            ? '2px solid var(--accent)'
-            : '2px solid transparent',
+          : '2px solid transparent',
         background: 'var(--surface)',
         transition: 'border-color 0.15s ease',
-        opacity: isChecked ? 0.85 : 1,
       }}
     >
       <div style={{ position: 'relative', aspectRatio: '4/5', overflow: 'hidden' }}>
@@ -44,16 +38,6 @@ export function ImageCard({ image, isSelected, isChecked, showCheckbox, onClick,
           alt={`${image.moment_category} - ${image.style}`}
           style={{ width: '100%', height: '100%', objectFit: 'cover' }}
         />
-
-        {/* Multi-select checkbox */}
-        {showCheckbox && (
-          <div
-            className={`image-card-checkbox ${isChecked ? 'checked' : ''}`}
-            onClick={onToggleCheck}
-          >
-            {isChecked && <Check size={14} strokeWidth={3} />}
-          </div>
-        )}
 
         <div
           style={{

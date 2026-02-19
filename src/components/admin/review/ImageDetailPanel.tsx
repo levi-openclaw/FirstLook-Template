@@ -1,10 +1,9 @@
 'use client';
 
-import { useState, useEffect, Component, type ReactNode, type ErrorInfo } from 'react';
-import type { AnalyzedImage, ReviewStatus } from '@/lib/types/database';
+import { useState, Component, type ReactNode, type ErrorInfo } from 'react';
+import type { AnalyzedImage } from '@/lib/types/database';
 import { Badge } from '@/components/ui/Badge';
-import { Button } from '@/components/ui/Button';
-import { X, Check, XCircle, ChevronDown, ChevronUp, ChevronLeft, ChevronRight, Heart, MessageCircle, Bookmark, Share2, Users, Calendar, AlertTriangle } from 'lucide-react';
+import { X, ChevronDown, ChevronUp, ChevronLeft, ChevronRight, Heart, MessageCircle, Bookmark, Share2, Users, Calendar, AlertTriangle } from 'lucide-react';
 import { formatPercentage, formatNumber, formatDate } from '@/lib/utils/format';
 
 // Error boundary to catch render errors in the sidebar
@@ -51,7 +50,6 @@ interface ImageDetailPanelProps {
   imageIndex?: number;
   imageTotal?: number;
   onClose: () => void;
-  onUpdateStatus: (id: string, status: ReviewStatus, notes: string | null) => void;
   onNavigate?: (direction: 'prev' | 'next') => void;
 }
 
@@ -85,7 +83,7 @@ const boolTags = [
 ] as const;
 
 function formatTag(value: unknown): string {
-  if (value == null || value === '') return '—';
+  if (value == null || value === '') return '\u2014';
   return String(value).replace(/_/g, ' ');
 }
 
@@ -102,14 +100,8 @@ export function ImageDetailPanel(props: ImageDetailPanelProps) {
   );
 }
 
-function ImageDetailPanelInner({ image, imageIndex, imageTotal, onClose, onUpdateStatus, onNavigate }: ImageDetailPanelProps) {
-  const [notes, setNotes] = useState(image.override_notes || '');
+function ImageDetailPanelInner({ image, imageIndex, imageTotal, onClose, onNavigate }: ImageDetailPanelProps) {
   const [expanded, setExpanded] = useState(false);
-
-  // Reset notes when image changes
-  useEffect(() => {
-    setNotes(image.override_notes || '');
-  }, [image.id, image.override_notes]);
 
   const imgRecord = image as unknown as Record<string, unknown>;
   const creativeTechniques = formatArrayTag(imgRecord.creative_techniques);
@@ -126,7 +118,7 @@ function ImageDetailPanelInner({ image, imageIndex, imageTotal, onClose, onUpdat
                 className="btn btn-icon btn-sm"
                 onClick={() => onNavigate('prev')}
                 disabled={imageIndex !== undefined && imageIndex <= 1}
-                title="Previous image (←)"
+                title="Previous image"
               >
                 <ChevronLeft size={16} />
               </button>
@@ -134,7 +126,7 @@ function ImageDetailPanelInner({ image, imageIndex, imageTotal, onClose, onUpdat
                 className="btn btn-icon btn-sm"
                 onClick={() => onNavigate('next')}
                 disabled={imageIndex !== undefined && imageTotal !== undefined && imageIndex >= imageTotal}
-                title="Next image (→)"
+                title="Next image"
               >
                 <ChevronRight size={16} />
               </button>
@@ -342,36 +334,21 @@ function ImageDetailPanelInner({ image, imageIndex, imageTotal, onClose, onUpdat
           )}
         </div>
 
-        <div style={{ marginBottom: 'var(--space-4)' }}>
-          <span className="t-label" style={{ display: 'block', marginBottom: 'var(--space-2)' }}>Override Notes</span>
-          <textarea
-            className="input"
-            rows={2}
-            placeholder="Notes about classification override..."
-            value={notes}
-            onChange={(e) => setNotes(e.target.value)}
-            style={{ width: '100%', resize: 'vertical' }}
-          />
-        </div>
-      </div>
-
-      <div className="review-sidebar-footer">
-        <Button
-          variant="primary"
-          onClick={() => onUpdateStatus(image.id, 'approved', notes || null)}
-          style={{ flex: 1 }}
-        >
-          <Check size={14} />
-          Approve
-        </Button>
-        <Button
-          variant="default"
-          onClick={() => onUpdateStatus(image.id, 'rejected', notes || null)}
-          style={{ flex: 1 }}
-        >
-          <XCircle size={14} />
-          Reject
-        </Button>
+        {/* Override notes (read-only) */}
+        {image.override_notes && (
+          <div style={{ marginBottom: 'var(--space-4)' }}>
+            <span className="t-label" style={{ display: 'block', marginBottom: 'var(--space-2)' }}>Notes</span>
+            <p className="t-caption" style={{
+              padding: 'var(--space-2) var(--space-3)',
+              background: 'var(--bg)',
+              borderRadius: 'var(--radius)',
+              border: '1px solid var(--border)',
+              color: 'var(--text-secondary)',
+            }}>
+              {image.override_notes}
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -6,6 +6,8 @@ import { ActorConfigPanel } from '@/components/admin/ingestion/ActorConfigPanel'
 import { ScrapeHistoryTable } from '@/components/admin/ingestion/ScrapeHistoryTable';
 import { RawPostsTable } from '@/components/admin/ingestion/RawPostsTable';
 import { AnalysisQueuePanel } from '@/components/admin/ingestion/AnalysisQueuePanel';
+import { ApifyMarketplace } from '@/components/admin/ingestion/ApifyMarketplace';
+import { CsvUploader } from '@/components/admin/ingestion/CsvUploader';
 import { getPipelineStats, getActorConfigs, getScrapeRuns, getRawPosts } from '@/lib/supabase/queries';
 import { formatNumber } from '@/lib/utils/format';
 
@@ -62,6 +64,14 @@ export default async function IngestionPage() {
       </div>
 
       <RawPostsTable posts={rawPosts} />
+
+      <div style={{ marginTop: 'var(--space-6)' }}>
+        <h2 className="t-sub" style={{ marginBottom: 'var(--space-4)' }}>Marketplace & Import</h2>
+        <div className="grid-2" style={{ marginBottom: 'var(--space-4)' }}>
+          <ApifyMarketplace />
+          <CsvUploader />
+        </div>
+      </div>
     </div>
   );
 }
