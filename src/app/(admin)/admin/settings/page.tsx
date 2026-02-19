@@ -22,7 +22,14 @@ export default async function SettingsPage() {
         <MetricCard
           label="APIs Connected"
           value={`${connectedCount} / ${apiKeyStatuses.length}`}
-          trend={{ value: connectedCount === apiKeyStatuses.length ? 'All connected' : 'Action needed', direction: connectedCount === apiKeyStatuses.length ? 'up' : 'down' }}
+          trend={{
+            value: apiKeyStatuses.length === 0
+              ? 'No services configured'
+              : connectedCount === apiKeyStatuses.length
+                ? 'All connected'
+                : `${apiKeyStatuses.length - connectedCount} need attention`,
+            direction: connectedCount === apiKeyStatuses.length && apiKeyStatuses.length > 0 ? 'up' : 'down',
+          }}
           icon={Key}
         />
       </div>

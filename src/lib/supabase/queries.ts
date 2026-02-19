@@ -1,5 +1,5 @@
 import { createServerClient } from './server';
-import { isSupabaseConfigured } from './config';
+import { isSupabaseConfigured, isApifyConfigured, isAnthropicConfigured, isOpenAIConfigured } from './config';
 import {
   mockPipelineStats,
   mockActivityEvents,
@@ -9,7 +9,6 @@ import {
   mockAnalyzedImages,
   mockPromptVersions,
   mockTrendSnapshots,
-  mockApiKeyStatuses,
 } from '@/lib/mock';
 import type {
   PipelineStats,
@@ -310,20 +309,38 @@ export async function getTrendSnapshots(limit = 30): Promise<TrendSnapshot[]> {
 // ============================================================
 
 export async function getApiKeyStatuses(): Promise<ApiKeyStatus[]> {
-  if (!isSupabaseConfigured()) return mockApiKeyStatuses;
-
-  const supabase = createServerClient();
-  const { data, error } = await supabase
-    .from('api_key_statuses')
-    .select('*')
-    .order('service');
-
-  if (error) {
-    console.error('getApiKeyStatuses error:', error);
-    return mockApiKeyStatuses;
-  }
-
-  return data as ApiKeyStatus[];
+  // Derive status directly from environment variables — no database query needed.
+  // This ensures the Settings page shows correct status on fresh deploys.
+  return [
+    {
+      service: 'Supabase',
+      is_connected: isSupabaseConfigured(),
+      last_verified: null,
+      quota_used: null,
+      quota_limit: null,
+    },
+    {
+      service: 'Apify',
+      is_connected: isApifyConfigured(),
+      last_verified: null,
+      quota_used: null,
+      quota_limit: null,
+    },
+    {
+      service: 'Anthropic',
+      is_connected: isAnthropicConfigured(),
+      last_verified: null,
+      quota_used: null,
+      quota_limit: null,
+    },
+    {
+      service: 'OpenAI',
+      is_connected: isOpenAIConfigured(),
+      last_verified: null,
+      quota_used: null,
+      quota_limit: null,
+    },
+  ];
 }
 
 // ============================================================

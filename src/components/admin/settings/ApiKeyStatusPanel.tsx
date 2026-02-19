@@ -19,7 +19,7 @@ const SERVICE_CONFIG: Record<string, { envVars: string[]; helpText: string; help
     helpText: 'Get your API token from console.apify.com \u2192 Settings \u2192 Integrations',
     helpUrl: 'https://console.apify.com',
   },
-  'Anthropic (Claude)': {
+  'Anthropic': {
     envVars: ['ANTHROPIC_API_KEY'],
     helpText: 'Get your API key from console.anthropic.com \u2192 API Keys',
     helpUrl: 'https://console.anthropic.com',
