@@ -4,10 +4,9 @@ import { Badge } from '@/components/ui/Badge';
 interface QueueStatusCardProps {
   queueSize: number;
   avgProcessingMs: number;
-  pendingReview: number;
 }
 
-export function QueueStatusCard({ queueSize, avgProcessingMs, pendingReview }: QueueStatusCardProps) {
+export function QueueStatusCard({ queueSize, avgProcessingMs }: QueueStatusCardProps) {
   return (
     <Card>
       <div style={{ padding: 'var(--space-4)' }}>
@@ -19,16 +18,12 @@ export function QueueStatusCard({ queueSize, avgProcessingMs, pendingReview }: Q
         </div>
         <div className="flex flex-col gap-3">
           <div className="flex items-center justify-between">
-            <span className="t-body">Scoring Queue</span>
+            <span className="t-body">Analysis Queue</span>
             <span className="t-sub">{queueSize}</span>
           </div>
           <div className="flex items-center justify-between">
             <span className="t-body">Avg Processing Time</span>
             <span className="t-sub">{(avgProcessingMs / 1000).toFixed(1)}s</span>
-          </div>
-          <div className="flex items-center justify-between">
-            <span className="t-body">Pending Review</span>
-            <span className="t-sub" style={{ color: 'var(--accent)' }}>{pendingReview}</span>
           </div>
         </div>
       </div>

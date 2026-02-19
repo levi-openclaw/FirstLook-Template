@@ -11,7 +11,6 @@ import {
   mockPromptVersions,
   mockTrendSnapshots,
   mockApiKeyStatuses,
-  mockCuratedAccounts,
 } from '@/lib/mock';
 import type {
   PipelineStats,
@@ -26,7 +25,6 @@ import type {
   TrendSnapshot,
   LiveTrends,
   ApiKeyStatus,
-  CuratedAccount,
 } from '@/lib/types/database';
 
 // ============================================================
@@ -349,27 +347,6 @@ export async function getApiKeyStatuses(): Promise<ApiKeyStatus[]> {
   }
 
   return data as ApiKeyStatus[];
-}
-
-// ============================================================
-// Curated Accounts
-// ============================================================
-
-export async function getCuratedAccounts(): Promise<CuratedAccount[]> {
-  if (!isSupabaseConfigured()) return mockCuratedAccounts;
-
-  const supabase = createServerClient();
-  const { data, error } = await supabase
-    .from('curated_accounts')
-    .select('*')
-    .order('handle');
-
-  if (error) {
-    console.error('getCuratedAccounts error:', error);
-    return mockCuratedAccounts;
-  }
-
-  return data as CuratedAccount[];
 }
 
 // ============================================================

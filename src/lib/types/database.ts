@@ -233,13 +233,3 @@ export interface ApiKeyStatus {
   quota_limit: number | null;
 }
 
-export interface CuratedAccount {
-  id: string;
-  handle: string;
-  platform: Platform;
-  follower_tier: FollowerTier;
-  style: string;
-  follower_count: number;
-  last_scraped: string | null;
-  is_active: boolean;
-}

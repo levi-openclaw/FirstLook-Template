@@ -1,13 +1,6 @@
 import { Heart, MessageCircle, Users } from 'lucide-react';
 import type { AnalyzedImage } from '@/lib/types/database';
-import { Badge } from '@/components/ui/Badge';
 import { formatPercentage, formatNumber, formatRelativeTime } from '@/lib/utils/format';
-
-const statusVariant: Record<string, 'success' | 'warning' | 'neutral'> = {
-  approved: 'success',
-  rejected: 'warning',
-  unreviewed: 'neutral',
-};
 
 interface ImageCardProps {
   image: AnalyzedImage;
@@ -39,17 +32,6 @@ export function ImageCard({ image, isSelected, onClick }: ImageCardProps) {
           style={{ width: '100%', height: '100%', objectFit: 'cover' }}
         />
 
-        <div
-          style={{
-            position: 'absolute',
-            top: 8,
-            right: 8,
-          }}
-        >
-          <Badge variant={statusVariant[image.review_status]} dot>
-            {image.review_status}
-          </Badge>
-        </div>
         <div
           style={{
             position: 'absolute',

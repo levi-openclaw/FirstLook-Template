@@ -77,7 +77,6 @@ const boolTags = [
   { label: 'Portrait', key: 'is_portrait' },
   { label: 'Candid', key: 'is_candid' },
   { label: 'Detail Shot', key: 'is_detail_shot' },
-  { label: 'Dress Visible', key: 'dress_visible' },
   { label: 'Motion Blur', key: 'has_motion_blur' },
   { label: 'Editorial', key: 'editorial_publishable' },
 ] as const;
@@ -153,20 +152,14 @@ function ImageDetailPanelInner({ image, imageIndex, imageTotal, onClose, onNavig
           />
         </div>
 
-        {/* Status + Account */}
-        <div className="flex items-center justify-between" style={{ marginBottom: 'var(--space-3)' }}>
-          <Badge
-            variant={image.review_status === 'approved' ? 'success' : image.review_status === 'rejected' ? 'warning' : 'neutral'}
-            dot
-          >
-            {image.review_status}
-          </Badge>
-          {image.account_handle && (
+        {/* Account */}
+        {image.account_handle && (
+          <div style={{ marginBottom: 'var(--space-3)' }}>
             <span className="t-caption" style={{ fontWeight: 600 }}>
               @{image.account_handle}
             </span>
-          )}
-        </div>
+          </div>
+        )}
 
         {/* Engagement Stats */}
         <div style={{

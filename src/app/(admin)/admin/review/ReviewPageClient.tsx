@@ -53,7 +53,7 @@ function exportCsv(images: AnalyzedImage[]) {
     'id', 'image_url', 'style', 'moment_category', 'content_type', 'setting',
     'lighting', 'composition', 'engagement_rate', 'like_count', 'comment_count',
     'save_count', 'share_count', 'account_handle', 'account_follower_count',
-    'follower_tier', 'review_status', 'post_date',
+    'follower_tier', 'post_date',
   ];
 
   const rows = images.map((img) => {
@@ -188,7 +188,7 @@ export default function ReviewPageClient({ initialImages }: ReviewPageClientProp
       <div className="page-header">
         <div>
           <h1>Content Explorer</h1>
-          <p className="t-sub">Browse, filter, and analyze scored content</p>
+          <p className="t-sub">Browse, filter, and analyze your content</p>
         </div>
         <div className="flex items-center gap-2">
           <Button
